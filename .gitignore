@@ -1,0 +1,12 @@
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/.env
+
+# Backend
+backend/.env
+backend/bin/
+
+# General
+.DS_Store
+*.log
