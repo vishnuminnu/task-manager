@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the GitHub repository
-                git url: 'https://github.com/your-username/task-manager.git', branch: 'main'
+                git url: 'https://github.com/vishnuminnu/task-manager.git', branch: 'main'
             }
         }
         stage('Build Frontend') {
