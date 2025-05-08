@@ -6,6 +6,7 @@ frontend/build/
 # Backend
 
 backend/bin/
+backend/.env
 
 # General
 .DS_Store
