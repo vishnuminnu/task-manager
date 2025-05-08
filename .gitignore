@@ -10,3 +10,6 @@ backend/bin/
 # General
 .DS_Store
 *.log
+
+frontend/.env
+backend/.env
