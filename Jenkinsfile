@@ -1,10 +1,9 @@
 pipeline {
     agent any
     
-    // PROPER tools section (no trailing characters)
     tools {
-        nodejs 'Node16'  // Must match exact name in Jenkins Global Tools
-        go 'Go'          // Must match exact name in Jenkins Global Tools 
+        nodejs 'Node16'  // Make sure this is configured in Jenkins Global Tools
+        go 'Go'          // Make sure this is configured in Jenkins Global Tools
     }
     
     stages {
@@ -18,8 +17,8 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                    bat 'npm install'  // Changed from sh to bat for Windows
+                    bat 'npm run build'
                 }
             }
         }
@@ -27,7 +26,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    sh 'go build -o taskmanager'
+                    bat 'go build -o taskmanager.exe'  // Changed from sh to bat
                 }
             }
         }
