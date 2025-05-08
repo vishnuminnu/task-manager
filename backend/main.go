@@ -3,11 +3,11 @@ package main
 import (
     "context"
     "log"
+    "os"
     "github.com/gin-gonic/gin"
     "github.com/joho/godotenv"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
-    "os"
 )
 
 type Task struct {
@@ -20,20 +20,40 @@ type Task struct {
 var collection *mongo.Collection
 
 func main() {
-     // Load .env file if it exists, but don't crash if it doesn't
-     if err := godotenv.Load(); err != nil {
+    // Load .env file if it exists, but don't crash if it doesn't
+    if err := godotenv.Load(); err != nil {
         log.Println("No .env file found, relying on environment variables")
     }
 
+    // Get and validate MONGO_URI
     mongoURI := os.Getenv("MONGO_URI")
+    if mongoURI == "" {
+        log.Fatal("MONGO_URI not set")
+    }
+    log.Println("Connecting to MongoDB at:", mongoURI)
+
+    // Connect to MongoDB
     clientOptions := options.Client().ApplyURI(mongoURI)
     client, err := mongo.Connect(context.TODO(), clientOptions)
     if err != nil {
-        log.Fatal(err)
+        log.Fatal("Failed to connect to MongoDB:", err)
+    }
+    // Ensure MongoDB client is disconnected on exit
+    defer func() {
+        if err := client.Disconnect(context.TODO()); err != nil {
+            log.Printf("Error disconnecting MongoDB client: %v", err)
+        }
+    }()
+
+    // Verify MongoDB connection
+    if err := client.Ping(context.TODO(), nil); err != nil {
+        log.Fatal("Failed to ping MongoDB:", err)
     }
 
+    // Set up MongoDB collection
     collection = client.Database("taskdb").Collection("tasks")
 
+    // Initialize Gin router
     r := gin.Default()
     r.Use(func(c *gin.Context) {
         c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -46,10 +66,14 @@ func main() {
         c.Next()
     })
 
+    // Define API routes
     r.GET("/api/tasks", getTasks)
     r.POST("/api/tasks", createTask)
     r.PUT("/api/tasks/:id", updateTask)
     r.DELETE("/api/tasks/:id", deleteTask)
 
-    r.Run(":8080")
+    // Start server
+    if err := r.Run(":8080"); err != nil {
+        log.Fatal("Failed to start server:", err)
+    }
 }
