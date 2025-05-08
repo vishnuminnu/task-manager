@@ -20,8 +20,9 @@ type Task struct {
 var collection *mongo.Collection
 
 func main() {
-    if err := godotenv.Load(); err != nil {
-        log.Fatal("Error loading .env file")
+     // Load .env file if it exists, but don't crash if it doesn't
+     if err := godotenv.Load(); err != nil {
+        log.Println("No .env file found, relying on environment variables")
     }
 
     mongoURI := os.Getenv("MONGO_URI")
