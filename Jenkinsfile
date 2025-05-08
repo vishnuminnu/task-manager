@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         nodejs 'Node16' // Node.js installation defined in Global Tool Configuration
-        go 'Go1.21.0'     // Go installation defined in Global Tool Configuration
+        go 'Go'     // Go installation defined in Global Tool Configuration
     }git 
     stages {
         stage('Checkout') {
