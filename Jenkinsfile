@@ -1,47 +1,35 @@
 pipeline {
     agent any
+    
+    // PROPER tools section (no trailing characters)
     tools {
-        nodejs 'Node16' // Node.js installation defined in Global Tool Configuration
-        go 'Go'     // Go installation defined in Global Tool Configuration
-    }git 
+        nodejs 'Node16'  // Must match exact name in Jenkins Global Tools
+        go 'Go'          // Must match exact name in Jenkins Global Tools 
+    }
+    
     stages {
         stage('Checkout') {
             steps {
-                // Clone the GitHub repository
-                git url: 'https://github.com/vishnuminnu/task-manager.git', branch: 'main'
+                git branch: 'main', 
+                url: 'https://github.com/vishnuminnu/task-manager.git'
             }
         }
+        
         stage('Build Frontend') {
             steps {
-                // Navigate to frontend directory and build React app
                 dir('frontend') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
             }
         }
+        
         stage('Build Backend') {
             steps {
-                // Navigate to backend directory and build Go application
                 dir('backend') {
-                    sh 'go mod tidy'
-                    sh 'go build -o task-manager-backend'
+                    sh 'go build -o taskmanager'
                 }
             }
-        }
-        stage('Archive Artifacts') {
-            steps {
-                // Archive frontend build and backend binary
-                archiveArtifacts artifacts: 'frontend/build/**, backend/task-manager-backend', fingerprint: true
-            }
-        }
-    }
-    post {
-        success {
-            echo 'Build completed successfully!'
-        }
-        failure {
-            echo 'Build failed. Check the logs.'
         }
     }
 }
